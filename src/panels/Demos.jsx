@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { addPost } from "../controllers/apiConnector";
+import { addImageDataToDocument, createImageFromBuffer, fetchS3PresignedContent } from "../utils/imageHandlers";
 
 export const Demos = () => {
     const [formData, setFormData] = useState({
-        numVariations: 1,
         prompt: "",
         negativePrompt: "",
         contentClass: "",
@@ -34,10 +34,31 @@ export const Demos = () => {
 
     const submitForm = (e) => {
         e.preventDefault();
-        addPost(formData).then((response) => {
-            console.log(response);
-        })
         console.log(formData);
+        const requestBody = {
+            numVariations: 1,
+            prompt: formData.prompt,
+            negativePrompt: formData.negativePrompt,
+            contentClass: formData.contentClass,
+            size: formData.size,
+            style: {
+                presets: formData.styles
+            }
+        }
+        // Post the data to the FF API endpoint and return the response
+        addPost(requestBody).then((response) => {
+            console.log(response);
+            // Get the url from the response for the presigned URL to the image in the Amazon S3 bucket
+            const contentUrl = response.outputs[0].image.url;
+            fetchS3PresignedContent(contentUrl).then((buffer) => {
+                    createImageFromBuffer(buffer).then((imageToken) => {
+                        addImageDataToDocument(imageToken).then((result) => {
+                            console.log("Image added to document");
+                        });
+            })
+        })
+    })
+        
     };
 
     const classTypes = [
@@ -52,7 +73,7 @@ export const Demos = () => {
         { size: '{"width": 2688, "height": 1536}', label: "Widescreen" }
     ]
 
-    const styles = [
+    const styleOptions = [
         { id: "color_explosion", label: "Color Explosion" },
         { id: "dark", label: "Dark" },
         { id: "faded_image", label: "Faded Image" },
@@ -105,7 +126,7 @@ export const Demos = () => {
                     </sp-menu>
                 </sp-picker>
                     <div style={{display: "flex", flexDirection: "column"}}>
-                        {styles.map((style) => (
+                        {styleOptions.map((style) => (
                             <sp-checkbox 
                                 key={style.id} 
                                 onClick={handleChange}

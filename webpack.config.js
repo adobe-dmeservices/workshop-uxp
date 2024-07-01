@@ -15,7 +15,8 @@ module.exports = {
     externals: {
         uxp: 'commonjs2 uxp',
         photoshop: 'commonjs2 photoshop',
-        os: 'commonjs2 os'
+        os: 'commonjs2 os',
+        fs: 'commonjs2 fs',
     },
     resolve: {
         extensions: [".js", ".jsx"]
