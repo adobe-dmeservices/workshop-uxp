@@ -16,9 +16,17 @@
       "schemes": ["http", "https"],
       "extensions": [".svg", ".png"]
     },
+    "network": {
+      "domains": "all"
+    },
     "webview": {
       "allow": "yes",
-      "domains": ["https://*.adobe.com", "https://*.google.com"]
+      "domains": [
+        "https://*.adobe.com",
+        "https://*.google.com",
+        "https://firefly-api.adobe.io/v3/images/generate",
+        "https://ims-na1.adobelogin.com/ims/token/v3"
+      ]
     }
   },
   "entrypoints": [

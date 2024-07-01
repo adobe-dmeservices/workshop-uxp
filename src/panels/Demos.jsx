@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { addPost } from "../controllers/apiConnector";
 
 export const Demos = () => {
     const [formData, setFormData] = useState({
+        numVariations: 1,
         prompt: "",
         negativePrompt: "",
         contentClass: "",
@@ -32,6 +34,9 @@ export const Demos = () => {
 
     const submitForm = (e) => {
         e.preventDefault();
+        addPost(formData).then((response) => {
+            console.log(response);
+        })
         console.log(formData);
     };
 
@@ -48,14 +53,14 @@ export const Demos = () => {
     ]
 
     const styles = [
-        { "id": "color_explosion", "label": "Color Explosion" },
-        { "id": "dark", "label": "Dark" },
-        { "id": "faded_image", "label": "Faded Image" },
-        { "id": "fisheye", "label": "Fisheye" },
-        { "id": "iridescent", "label": "Iridescent" },
-        { "id": "isometric", "label": "Isometric" },
-        { "id": "misty", "label": "Misty" },
-        { "id": "neon", "label": "Neon" },
+        { id: "color_explosion", label: "Color Explosion" },
+        { id: "dark", label: "Dark" },
+        { id: "faded_image", label: "Faded Image" },
+        { id: "fisheye", label: "Fisheye" },
+        { id: "iridescent", label: "Iridescent" },
+        { id: "isometric", label: "Isometric" },
+        { id: "misty", label: "Misty" },
+        { id: "neon", label: "Neon" },
     ]
 
     return (

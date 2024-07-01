@@ -1,6 +1,8 @@
 const path = require("path");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
+require('dotenv').config(); // Load .env file for Webpack
+const webpack = require('webpack');
 
 module.exports = {
     entry: './src/index.jsx',
@@ -44,9 +46,13 @@ module.exports = {
         ]
     },
     plugins: [
-        //new CleanWebpackPlugin(),
+        new CleanWebpackPlugin(),
         new CopyPlugin(['plugin'], {
             copyUnmodified: true
+        }),
+        new webpack.DefinePlugin({
+            'process.env.FIREFLY_CLIENT_ID': JSON.stringify(process.env.FIREFLY_CLIENT_ID),
+            'process.env.FIREFLY_CLIENT_SECRET': JSON.stringify(process.env.FIREFLY_CLIENT_SECRET),
         })
     ]
 };
