@@ -46,3 +46,25 @@ export const addPost = async (data) => {
         console.log(error);
     }
 }
+
+export const uploadReferenceImage = async (data) => {
+    const refUrl = "https://firefly-api.adobe.io/v2/storage/image"
+    if (!ACCESS_TOKEN) {
+        console.log("No token....getting it now...");
+        await getToken();
+    }
+    try {
+        const response = await fetch(refUrl, {
+            method: "POST",
+            headers: {
+                "X-Api-Key": CLIENT_ID,
+                Authorization: `Bearer ${ACCESS_TOKEN}`,
+                'Content-Type': 'image/jpeg'
+            },
+            body: data
+        })
+        return response.json();
+    } catch (error) {
+        console.log(error);
+    }
+}

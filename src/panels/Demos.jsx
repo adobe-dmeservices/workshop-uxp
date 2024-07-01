@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { addPost } from "../controllers/apiConnector";
-import { addImageDataToDocument, createImageFromBuffer, fetchS3PresignedContent } from "../utils/imageHandlers";
+import { 
+    addImageDataToDocument, 
+    createImageFromBuffer, 
+    fetchS3PresignedContent, 
+    runModalFunction, 
+    uploadImage 
+} from "../utils/imageHandlers";
 
 export const Demos = () => {
     const [formData, setFormData] = useState({
@@ -8,8 +14,14 @@ export const Demos = () => {
         negativePrompt: "",
         contentClass: "",
         size: {},
-        styles: []
+        styles: [],
     });
+    const [referenceImage, setReferenceImage] = useState({ id: "", name: ""});
+
+    useEffect(() => {
+        // This function intentionally left blank. 
+        // It's here to trigger a re-render when formData.referenceImage.name changes.
+    }, [referenceImage.name]); // Dependency array
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -32,9 +44,19 @@ export const Demos = () => {
         }));
     };
 
+    const handleUploadImage = async () => {
+        try {
+            // Await the async operation to complete and get the response
+            const response = await uploadImage();
+            // Set the reference image with the response
+            setReferenceImage(response);
+        } catch (error) {
+            console.error("There was a problem uploading the image:", error);
+        }
+    }
+
     const submitForm = (e) => {
         e.preventDefault();
-        console.log(formData);
         const requestBody = {
             numVariations: 1,
             prompt: formData.prompt,
@@ -42,8 +64,12 @@ export const Demos = () => {
             contentClass: formData.contentClass,
             size: formData.size,
             style: {
-                presets: formData.styles
+                presets: formData.styles,
+                strength: 100,
             }
+        }
+        if (referenceImage.id !== "") {
+            requestBody.style.imageReference = {source: {uploadId: referenceImage.id}};
         }
         // Post the data to the FF API endpoint and return the response
         addPost(requestBody).then((response) => {
@@ -51,15 +77,27 @@ export const Demos = () => {
             // Get the url from the response for the presigned URL to the image in the Amazon S3 bucket
             const contentUrl = response.outputs[0].image.url;
             fetchS3PresignedContent(contentUrl).then((buffer) => {
-                    createImageFromBuffer(buffer).then((imageToken) => {
-                        addImageDataToDocument(imageToken).then((result) => {
-                            console.log("Image added to document");
-                        });
+                createImageFromBuffer(buffer).then((imageToken) => {
+                    addImageDataToDocument(imageToken).then((result) => {
+                        console.log("Image added to document");
+                    });
+                })
             })
         })
-    })
-        
     };
+
+    const clearReferenceImage = () => {
+        setReferenceImage({ id: "", name: "" });
+    }
+
+    const handleActions = async () => {
+        try {
+            await runModalFunction();
+        }
+        catch (error) {
+            console.error("There was a problem running the modal function:", error);
+        }
+    }
 
     const classTypes = [
         { id: "art", label: "Art" },
@@ -76,12 +114,12 @@ export const Demos = () => {
     const styleOptions = [
         { id: "color_explosion", label: "Color Explosion" },
         { id: "dark", label: "Dark" },
-        { id: "faded_image", label: "Faded Image" },
-        { id: "fisheye", label: "Fisheye" },
-        { id: "iridescent", label: "Iridescent" },
-        { id: "isometric", label: "Isometric" },
-        { id: "misty", label: "Misty" },
-        { id: "neon", label: "Neon" },
+        // { id: "faded_image", label: "Faded Image" },
+        // { id: "fisheye", label: "Fisheye" },
+        // { id: "iridescent", label: "Iridescent" },
+        // { id: "isometric", label: "Isometric" },
+        // { id: "misty", label: "Misty" },
+        // { id: "neon", label: "Neon" },
     ]
 
     return (
@@ -125,21 +163,27 @@ export const Demos = () => {
                         ))}
                     </sp-menu>
                 </sp-picker>
-                    <div style={{display: "flex", flexDirection: "column"}}>
-                        {styleOptions.map((style) => (
-                            <sp-checkbox 
-                                key={style.id} 
-                                onClick={handleChange}
-                                id="styles"
-                                value={style.id}
-                            >
-                                {style.label}
-                            </sp-checkbox>
-                        ))
-                        }
-                    </div>
+                <div style={{display: "flex", flexDirection: "column"}}>
+                    {styleOptions.map((style) => (
+                        <sp-checkbox 
+                            key={style.id} 
+                            onClick={handleChange}
+                            id="styles"
+                            value={style.id}
+                        >
+                            {style.label}
+                        </sp-checkbox>
+                    ))
+                    }
+                </div>
+                <sp-textfield value={referenceImage.name} disabled></sp-textfield>
+                <sp-action-button onClick={handleUploadImage}>↑</sp-action-button>
+                <sp-action-button onClick={clearReferenceImage}>×</sp-action-button>
+                
+                <br />
                 <sp-action-button type="submit">Submit</sp-action-button>
             </form>
+            <sp-action-button onClick={handleActions}>Actions</sp-action-button>
         </>
     );
 }

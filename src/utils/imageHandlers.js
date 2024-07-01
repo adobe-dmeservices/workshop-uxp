@@ -1,4 +1,7 @@
+import { uploadReferenceImage } from "../controllers/apiConnector";
+
 const fs = require("fs");
+const { storage } = require("uxp");
 
 export const fetchS3PresignedContent = async (presignedUrl) => {
     try {
@@ -63,3 +66,46 @@ export const addImageDataToDocument = async (imageToken) => {
         console.error("There was a problem adding the image to the document:", error);
     }
 }
+
+async function rmvBgrd() {
+    let result;
+    let psAction = require("photoshop").action;
+
+    let command = [
+        // Remove Background
+        {"_obj":"removeBackground"}
+    ];
+    result = await psAction.batchPlay(command, {});
+}
+
+export async function runModalFunction() {
+    await require("photoshop").core.executeAsModal(rmvBgrd, {"commandName": "Action Commands"});
+}
+
+
+const getReferenceImage = async () => {
+    try {
+        const file = await storage.localFileSystem.getFileForOpening({ types: ["jpg"] });
+        const data = await file.read({format: storage.formats.binary});
+        return {
+            data: data,
+            name: file.name
+        }
+    } catch(error) {
+        console.error("There was a problem getting the reference image:", error);
+    }
+}
+
+export const uploadImage = async () => {
+    try {
+        const response = await getReferenceImage();
+        const result = await uploadReferenceImage(response.data);
+        const ref = {
+            id: result.images[0].id,
+            name: response.name
+        };
+        return ref;
+    } catch (error) {
+        console.error("There was a problem uploading the image:", error);
+    }
+};

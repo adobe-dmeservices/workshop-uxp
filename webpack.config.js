@@ -19,7 +19,11 @@ module.exports = {
         fs: 'commonjs2 fs',
     },
     resolve: {
-        extensions: [".js", ".jsx"]
+        extensions: [".js", ".jsx"],
+        fallback: { 
+            "path": false,
+            "crypto": false,
+         }
     },
     module: {
         rules: [
