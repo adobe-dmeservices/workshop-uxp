@@ -1,28 +1,38 @@
 import React, { useState } from "react";
 
 export const Demos = () => {
-    const [prompt, setPrompt] = useState("");
-    const [classType, setClassType] = useState("art");
-    const [size, setSize] = useState({});
+    const [formData, setFormData] = useState({
+        prompt: "",
+        negativePrompt: "",
+        contentClass: "",
+        size: {},
+        styles: []
+    });
 
-    const handlePromptChange = (e) => {
-        setPrompt(e.target.value);
-    };
-
-    const handleClassChange = (e) => {
-        setClassType(e.target.value);
-    };
-
-    const handleSizeChange = (e) => {
-        const sizeObj = JSON.parse(e.target.getAttribute("value"));
-        setSize(sizeObj);
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        let newValue;
+        if (id === "size") {
+            newValue = JSON.parse(value);
+        } else if (id === "styles") {
+            const isChecked = e.target.checked;
+            if (isChecked) {
+                newValue = [...formData.styles, value];
+            } else {
+                newValue = formData.styles.filter((style) => style !== value);
+            }
+        } else {
+            newValue = value;
+        }
+        setFormData((prev) => ({
+            ...prev,
+            [id]: newValue
+        }));
     };
 
     const submitForm = (e) => {
         e.preventDefault();
-        console.log(prompt); 
-        console.log(classType);
-        console.log(size);
+        console.log(formData);
     };
 
     const classTypes = [
@@ -37,22 +47,38 @@ export const Demos = () => {
         { size: '{"width": 2688, "height": 1536}', label: "Widescreen" }
     ]
 
+    const styles = [
+        { "id": "color_explosion", "label": "Color Explosion" },
+        { "id": "dark", "label": "Dark" },
+        { "id": "faded_image", "label": "Faded Image" },
+        { "id": "fisheye", "label": "Fisheye" },
+        { "id": "iridescent", "label": "Iridescent" },
+        { "id": "isometric", "label": "Isometric" },
+        { "id": "misty", "label": "Misty" },
+        { "id": "neon", "label": "Neon" },
+    ]
+
     return (
         <>
-            <form onSubmit={submitForm}>
-                <sp-field-label style={{color: "white"}}>Prompt</sp-field-label>
-                <sp-textfield
-                    onInput={handlePromptChange}
-                    multiline
-                    grows
-                ></sp-textfield>
+            <form onSubmit={submitForm} style={{fontFamily: "Adobe Clean"}}>
+                <sp-textarea
+                    onInput={handleChange}
+                    id="prompt"
+                    placeholder="Enter a prompt"
+                ></sp-textarea>
+                <sp-textarea
+                    onInput={handleChange}
+                    id="negativePrompt"
+                    placeholder="Enter a negative prompt"
+                ></sp-textarea>
                 <sp-picker value="art">
                     <sp-menu slot="options">
                         {classTypes.map((type) => (
                             <sp-menu-item 
                                 key={type.id} 
                                 value={type.id} 
-                                onClick={handleClassChange}
+                                onClick={handleChange}
+                                id="contentClass"
                             >
                                 {type.label}
                             </sp-menu-item>
@@ -65,13 +91,27 @@ export const Demos = () => {
                             <sp-menu-item 
                                 key={dim.label} 
                                 value={dim.size} 
-                                onClick={handleSizeChange}
+                                onClick={handleChange}
+                                id="size"
                             >
                                 {dim.label}
                             </sp-menu-item>
                         ))}
                     </sp-menu>
                 </sp-picker>
+                    <div style={{display: "flex", flexDirection: "column"}}>
+                        {styles.map((style) => (
+                            <sp-checkbox 
+                                key={style.id} 
+                                onClick={handleChange}
+                                id="styles"
+                                value={style.id}
+                            >
+                                {style.label}
+                            </sp-checkbox>
+                        ))
+                        }
+                    </div>
                 <sp-action-button type="submit">Submit</sp-action-button>
             </form>
         </>
