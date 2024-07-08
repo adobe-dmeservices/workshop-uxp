@@ -114,12 +114,12 @@ export const Demos = () => {
     const styleOptions = [
         { id: "color_explosion", label: "Color Explosion" },
         { id: "dark", label: "Dark" },
-        // { id: "faded_image", label: "Faded Image" },
-        // { id: "fisheye", label: "Fisheye" },
-        // { id: "iridescent", label: "Iridescent" },
-        // { id: "isometric", label: "Isometric" },
-        // { id: "misty", label: "Misty" },
-        // { id: "neon", label: "Neon" },
+        { id: "faded_image", label: "Faded Image" },
+        { id: "fisheye", label: "Fisheye" },
+        { id: "iridescent", label: "Iridescent" },
+        { id: "isometric", label: "Isometric" },
+        { id: "misty", label: "Misty" },
+        { id: "neon", label: "Neon" },
     ]
 
     return (
