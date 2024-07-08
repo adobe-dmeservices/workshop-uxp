@@ -9,37 +9,39 @@ Create Plugin
 - Give it a name
 - Give it an ID
 - Choose react-starter
-  Open folder in VSCode
-  In terminal, npm install
-  Delete package-lock.json file
-  yarn import
-  yarn watch
-  In UXP Developer Tools, Load and watch
-  In Photoshop, we see two panels load. We want one, so let’s delete one and see where it all gets called (not in dist)
-  Go to manifest.json - Talk through what manifest.json does
-  Go to index.jsx and talk through what index.jsx is doing
-  Delete MoreDemos.jsx and all references in order to be left with one panel
-  Once all references are deleted, we can kill the dev and yarn build, yarn watch again in VSCode and unload and load and watch in UXP Dev Tools
-  Change size of panel - In manifest.json adjust the preferredFloatingSize to 300 x 300
-  yarn build, yarn watch to see the changes
-  Layout basic UI in Demos.jsx
-  Spectrum Web Components - https://opensource.adobe.com/spectrum-web-components/components/ - No need to import or install, they are available to use
-  Add a text area, two pickers and a button
+
+Open folder in VSCode  
+In terminal, npm install  
+Delete package-lock.json file  
+yarn import  
+yarn watch  
+In UXP Developer Tools, Load and watch  
+In Photoshop, we see two panels load. We want one, so let’s delete one and see where it all gets called (not in dist)  
+Go to manifest.json - Talk through what manifest.json does  
+Go to index.jsx and talk through what index.jsx is doing  
+Delete MoreDemos.jsx and all references in order to be left with one panel  
+Once all references are deleted, we can kill the dev and yarn build, yarn watch again in VSCode and unload and load and watch in UXP Dev Tools  
+Change size of panel - In manifest.json adjust the preferredFloatingSize to 300 x 300  
+yarn build, yarn watch to see the changes  
+Layout basic UI in Demos.jsx  
+Spectrum Web Components - https://opensource.adobe.com/spectrum-web-components/components/ - No need to import or install, they are available to use  
+Add a text area, two pickers and a button
 
 ## Chapter Two - Finish UI
 
-Add another text area for negative prompt, add a div of checkboxes
-Add any options you want (6 or so) for styles (see presetOptions.js)
+Add another text area for negative prompt, add a div of checkboxes  
+Add any options you want (6 or so) for styles (see presetOptions.js)  
 Combine separate state objects into one formData object and all handle changes into handleChange
 
 ## Chapter Three - Connect to Firefly API
 
-Grab your credentials ....
-create a .env file and place your credentials in there (make sure to gitignore this if you're putting on GitHub)
-create apiConnector.js file inside of controllers
-modify webpack.config.js
-require dotenv and webpack
+Grab your credentials ....  
+create a .env file and place your credentials in there (make sure to gitignore this if you're putting on GitHub)  
+create apiConnector.js file inside of controllers  
+modify webpack.config.js  
+require dotenv and webpack  
 yarn add dotenv
+
 <b>if it ever freezes up on yarn build</b>
 
 - close VSCode
@@ -51,33 +53,35 @@ yarn add dotenv
 - yarn import
 - yarn build, yarn watch
 
-in apiConnector
-add your id and secret variables to use process.env.FIREFLY_CLIENT_ID, etc
-set url and body
-add fetch url to manifest.json to allow the domain
-in Demos.jsx, import addPost and add it to the submitForm function
-.then((response) => console.log(response)
-add numVariations: 1 to formData
+in apiConnector  
+add your id and secret variables to use process.env.FIREFLY_CLIENT_ID, etc  
+set url and body  
+add fetch url to manifest.json to allow the domain  
+in Demos.jsx, import addPost and add it to the submitForm function  
+add numVariations: 1 to formData  
 grab the string from the response.outputs[0].image.url and paste it into your browser to see your image
 
 ## Chapter Four - Display image in Photoshop
 
-Create a utils folder and a file called imageHandlers.js
-in imageHandlers we need three functions
-fetchS3PresignedConent to get the image as an arrayBuffer from the presigned URL Amazon S3 bucket
-createImageBuffer to create the image from that buffer and store it to a temp folder
-addIMageDataToDocument to use the photoshop API to open that temp file into Photoshop using an executeAsModal batchPlay event
-in webpack.config.js add fs: 'commonjs2 fs' into the externals:
-in Demos.jsx
-Build out the requestBody inside submitForm to handle the correct formatting of the body object (especially style)
+Create a utils folder and a file called imageHandlers.js  
+in imageHandlers we need three functions  
+fetchS3PresignedConent to get the image as an arrayBuffer from the presigned URL Amazon S3 bucket  
+createImageBuffer to create the image from that buffer and store it to a temp folder  
+addIMageDataToDocument to use the photoshop API to open that temp file into Photoshop using an executeAsModal batchPlay event  
+in webpack.config.js add fs: 'commonjs2 fs' into the externals:  
+in Demos.jsx - Build out the requestBody inside submitForm to handle the correct formatting of the body object (especially style)  
 If you want to add more functionality in the style, you could add that accordingly into the state
 
 ## Chapter Five - add Ps actions and upload reference image
 
-In imageHandlers getReferenceImage function
-uploadImage function that calls
+In imageHandlers getReferenceImage function  
+uploadImage function that calls  
 In manifest we need to allow filepicker
+
+```
 "localFileSystem": "fullAccess",
+```
+
 At some point you may get an error about path and crypto. Here's a quick fix
 
 ```
